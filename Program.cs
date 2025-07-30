@@ -11,15 +11,7 @@ namespace WeatherAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                string? connectionString = builder.Configuration.GetConnectionString("Default");
-
-                if (string.IsNullOrWhiteSpace(connectionString))
-                    throw new MissingFieldException("Failed to get Default connection string");
-
-                options.UseSqlServer(connectionString);
-            });
+            builder.Services.AddDbContext<ApplicationDbContext>();
 
             var app = builder.Build();
 
