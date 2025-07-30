@@ -10,5 +10,12 @@ namespace WeatherAPI.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Country>()
+                        .Property(c => c.CreatedAt)
+                        .HasDefaultValueSql("GETDATE()");
+        }
     }
 }

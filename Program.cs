@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
 using WeatherAPI.Data;
 using WeatherAPI.Data.Entities;
+using WeatherAPI.Models.DTO;
 
 namespace WeatherAPI
 {
@@ -34,6 +37,37 @@ namespace WeatherAPI
 
                 if (country == null)
                     return Results.NotFound();
+
+                return Results.Ok(country);
+            });
+
+            app.MapPost("/api/v1/countries", ([FromServices] ApplicationDbContext database, [FromBody] CountryDto countryDto) =>
+            {
+                if (string.IsNullOrWhiteSpace(countryDto.Code) || countryDto.Code.Length != 2)
+                    return Results.BadRequest("Incorrect country code");
+
+                if (string.IsNullOrWhiteSpace(countryDto.Name) || countryDto.Name.Length < 2 || countryDto.Name.Length > 256)
+                    return Results.BadRequest("Incorrect country name");
+
+                Country country = new Country()
+                {
+                    Code = countryDto.Code,
+                    Name = countryDto.Name
+                };
+
+                database.Countries.Add(country);
+
+                try
+                {
+                    database.SaveChanges();
+                }
+                catch (Exception exception) when (exception is DbUpdateException or DbUpdateConcurrencyException)
+                {
+                    return Results.Problem(
+                        title: "Internal Server Error",
+                        statusCode: StatusCodes.Status500InternalServerError
+                    );
+                }
 
                 return Results.Ok(country);
             });
