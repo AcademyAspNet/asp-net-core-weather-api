@@ -9,7 +9,7 @@ namespace WeatherAPI.Models.DTO
         public string? Code { get; set; }
 
         [Required(ErrorMessage = "Country name is required")]
-        [StringLength(2, MinimumLength = 2, ErrorMessage = "Minimum country name length is {1} characters")]
+        [StringLength(256, MinimumLength = 2, ErrorMessage = "Minimum country name length is {1} characters")]
         public string? Name { get; set; }
     }
 }
